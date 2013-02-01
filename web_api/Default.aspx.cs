@@ -39,12 +39,20 @@ public partial class _Default : System.Web.UI.Page
     {
         string sqlCmd = "";
 
+        SqlParameter pmr = null;
+       
         string[] list = new string[2];
         if (Request.QueryString["taskuser"] != null)
-            list[0] = "TASKUSER ='" + Request.QueryString["taskuser"] + "'";
+        {
+            pmr = new SqlParameter(Request.QueryString["taskuser"],SqlDbType.NChar);
+            list[0] = "TASKUSER ='" + pmr + "'";
+        }
 
         if (Request.QueryString["status"] != null)
-            list[1] = "STATUS =" + Request.QueryString["status"];
+        {
+            pmr = new SqlParameter(Request.QueryString["status"],SqlDbType.Int);
+            list[1] = "STATUS =" + pmr;
+        }
 
         for (int i = 0; i < list.Length; i++)
         {
@@ -77,11 +85,9 @@ public partial class _Default : System.Web.UI.Page
 
         objConnection.Open();
         SqlCommand cmd = new SqlCommand(strCmd, objConnection);
-        DataSet data = new DataSet();
-        SqlDataAdapter da = new SqlDataAdapter(cmd);
-        da.Fill(data);
+
         SqlDataReader dr = cmd.ExecuteReader();
-       // ToJson(data);
+
         JsonArrayCollection list = new JsonArrayCollection("tasks");
         while (dr.Read())
         {
@@ -107,11 +113,9 @@ public partial class _Default : System.Web.UI.Page
         }
         root.Add(list);
         objConnection.Close();
-        //Label1.Text = root.ToString();
-        //Response.ContentType = "text/jon";
-        //Response
-        Response.ContentType = "text/json";
-        Response.Write(root.ToString());
-        Response.End();
+        Label1.Text = root.ToString();
+        //Response.ContentType = "text/json";
+        //Response.Write(root.ToString());
+        //Response.End();
     }
 }
