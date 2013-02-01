@@ -113,9 +113,9 @@ public partial class _Default : System.Web.UI.Page
         }
         root.Add(list);
         objConnection.Close();
-        Label1.Text = root.ToString();
-        //Response.ContentType = "text/json";
-        //Response.Write(root.ToString());
-        //Response.End();
+
+        Response.AppendHeader("contnet-type", "text/json");
+        Response.Write(root.ToString());
+        Response.End();
     }
 }
