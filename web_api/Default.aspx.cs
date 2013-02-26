@@ -12,7 +12,6 @@ using Ultimus.WFServer;
 using System.Net.Json;
 using System.Data.SqlClient;
 
-
 public partial class _Default : System.Web.UI.Page 
 {
 
@@ -25,6 +24,7 @@ public partial class _Default : System.Web.UI.Page
         tl.LoadFilteredTasks(tf);
 
         Ultimus.WFServer.Task task = null;
+
         while (true)
         {
             task = tl.GetNextTask();
@@ -32,7 +32,7 @@ public partial class _Default : System.Web.UI.Page
             if (task.nTaskStatus == 1) break;
 
         }
-        return task.strFormUrl;
+        return task == null ? " " : task.strFormUrl;
     }
 
     protected string condition()
@@ -53,14 +53,13 @@ public partial class _Default : System.Web.UI.Page
             pmr = new SqlParameter(Request.QueryString["status"],SqlDbType.Int);
             list[1] = "STATUS =" + pmr;
         }
-
         for (int i = 0; i < list.Length; i++)
         {
             if (list[i] != null)
             {
                 if (sqlCmd == "")
                 {
-                    sqlCmd = "WHERE " + list[i];
+                    sqlCmd = " WHERE " + list[i];
                 }
                 else
                 {
@@ -76,12 +75,11 @@ public partial class _Default : System.Web.UI.Page
         JsonObjectCollection root = new JsonObjectCollection();
 
         SqlConnection objConnection = new SqlConnection(ConfigurationManager.ConnectionStrings["ApplicationServices"].ConnectionString);
-
         string strCmd;
         strCmd = @"SELECT 
                      TASKID,PROCESSNAME,PROCESSVERSION,INCIDENT,STEPID,STEPLABEL,RECIPIENT,RECIPIENTTYPE,TASKUSER,ASSIGNEDTOUSER,
                      STATUS,SUBSTATUS,STARTTIME,ENDTIME 
-                     FROM TASKS " + condition();
+                     FROM ultimusdba.TASKS" + condition();
 
         objConnection.Open();
         SqlCommand cmd = new SqlCommand(strCmd, objConnection);
